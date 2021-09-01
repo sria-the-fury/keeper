@@ -32,5 +32,5 @@ class KeeperSnackBar {
         ),
       ), backgroundColor: Colors.transparent, elevation: 1000, behavior: SnackBarBehavior.floating,);
   }
-  
+
 }

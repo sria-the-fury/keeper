@@ -5,6 +5,7 @@ import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:intl/intl.dart';
 import 'package:keeper/model/KeeperModel.dart';
 import 'package:keeper/utilities/KeeperSnackBar.dart';
+import 'package:keeper/utilities/ReadNote.dart';
 
 
 class NoteCard extends StatefulWidget {
@@ -70,6 +71,10 @@ class _NoteCardState extends State<NoteCard> {
     QuillController? _quillController = QuillController(document: Document.fromJson(jsonDecode(widget.note.noteDelta)), selection: TextSelection.collapsed(offset: 0));
 
     return GestureDetector(
+      onTap: (){
+        Navigator.of(context).push(new MaterialPageRoute<Null>(
+            builder: (BuildContext context) => new ReadNote(noteData: widget.note), fullscreenDialog: true));
+      },
       onLongPress: (){
         showModalBottomSheet<void>(
           shape: RoundedRectangleBorder(

@@ -18,6 +18,7 @@ class Keeper extends StatefulWidget {
 class _KeeperState extends State<Keeper> {
 
   bool isDarkMode = false;
+  bool newDataFirst = true;
 
   @override
   void initState() {
@@ -37,7 +38,11 @@ class _KeeperState extends State<Keeper> {
   }
 
 
-
+  @override
+  dispose(){
+    Hive.close();
+    super.dispose();
+  }
 
 
   Widget buildContent (List<KeeperModel> keeper){
@@ -46,13 +51,15 @@ class _KeeperState extends State<Keeper> {
     }
     else{
       var getCount = MediaQuery.of(context).size.width / 220;
+      var reverseKeeper = new List.from(keeper.reversed);
 
       return OrientationBuilder(
           builder: (context, orientation) =>
               GridView.count(
-                  crossAxisCount: getCount.toInt(),
-              children: new List.generate(keeper.length, (index) => NoteCard(note: keeper[index])),
-              
+                crossAxisCount: getCount.toInt(),
+                children: new List.generate(newDataFirst ? reverseKeeper.length  :keeper.length, (index) =>
+                    NoteCard(note: newDataFirst ? reverseKeeper[index] : keeper[index])),
+
               )
       );
 
@@ -69,12 +76,12 @@ class _KeeperState extends State<Keeper> {
           body: Container(
             padding: EdgeInsets.all(5.0),
             child: ValueListenableBuilder<Box<KeeperModel>>(
-          valueListenable: Boxes.getNote().listenable(),
-            builder: (context, box, _) {
-              final note = box.values.toList().cast<KeeperModel>();
+                valueListenable: Boxes.getNote().listenable(),
+                builder: (context, box, _) {
+                  final note = box.values.toList().cast<KeeperModel>();
 
-              return buildContent(note);
-            }),
+                  return buildContent(note);
+                }),
           ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: Theme.of(context).accentColor,
@@ -114,6 +121,8 @@ class _KeeperState extends State<Keeper> {
                                   ),
                                 )
                             ),
+
+                            SizedBox(width: 50.0,),
                             themeNotifier.isDark ? ElevatedButton.icon(
                               onPressed: () async {
                                 themeNotifier.isDark
@@ -145,7 +154,27 @@ class _KeeperState extends State<Keeper> {
                               ) ,
 
 
-                            )
+                            ),
+                            SizedBox(width: 20.0),
+
+                            ElevatedButton(
+                              onPressed: () async {
+                                setState(() {
+                                  newDataFirst = !newDataFirst;
+                                });
+                              },
+
+                              child: Text( newDataFirst ? 'SORT BY OLD' : 'SORT BY NEW'),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.deepPurpleAccent,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0)
+                                  )
+                              ) ,
+
+
+                            ),
+
                           ],
                         )
                     )
