@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart' as Widgets;
+
 import 'package:flutter_quill/flutter_quill.dart';
 
 class WriteNote extends StatefulWidget {
@@ -12,24 +12,9 @@ class WriteNote extends StatefulWidget {
 class _WriteNoteState extends State<WriteNote> {
 
   QuillController _quillController = QuillController.basic();
+  final FocusNode _focusNode = FocusNode();
   String diaryText = '';
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _quillController.addListener(() {
-  //     setState(() {
-  //       diaryText = _quillController.document.toPlainText();
-  //     });
-  //   });
-  // }
-  // //
-  // @override
-  // void dispose() {
-  //   // TODO: implement dispose
-  //   _quillController
-  //   super.dispose();
-  // }
 
   @override
   void initState() {
@@ -42,8 +27,7 @@ class _WriteNoteState extends State<WriteNote> {
 
   @override
   Widget build(BuildContext context) {
-
-    print('quill => ${_quillController.document.toDelta()}');
+    print('diaryText => ${diaryText.length > 1}');
 
     return Scaffold(
       body: RawKeyboardListener(
@@ -56,17 +40,15 @@ class _WriteNoteState extends State<WriteNote> {
         child: Container(
         padding: EdgeInsets.all(5.0),
         child: QuillEditor(
-          controller: _quillController,
-          autoFocus: true,
-          focusNode: FocusNode(),
-          readOnly: false,
-          scrollable: true,
-          expands: false,
-          showCursor: true,
-
-          placeholder: "Write your Note",
-          scrollController: ScrollController(),
-          padding: EdgeInsets.all(5),
+            controller: _quillController,
+            scrollController: ScrollController(),
+            scrollable: true,
+            focusNode: _focusNode,
+            autoFocus: true,
+            readOnly: false,
+            placeholder: 'Add content',
+            expands: false,
+            padding: EdgeInsets.zero,
 
         ),
       ),
@@ -77,7 +59,7 @@ class _WriteNoteState extends State<WriteNote> {
         onPressed: (){
           Navigator.of(context).pop();
         },
-        child: Icon(Icons.arrow_back_ios_new, color: Colors.white,),
+        child: Icon( diaryText.length > 1 ? Icons.save : Icons.arrow_back_ios_new, color: Colors.white,),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BottomAppBar(
