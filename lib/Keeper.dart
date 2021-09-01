@@ -5,8 +5,8 @@ import 'package:keeper/theme/ThemeModel.dart';
 import 'package:keeper/utilities/NoteCard.dart';
 import 'package:keeper/utilities/WriteNote.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Keeper extends StatefulWidget {
   const Keeper ({Key? key}) : super(key: key);
@@ -98,13 +98,118 @@ class _KeeperState extends State<Keeper> {
                           children: [
 
                             GestureDetector(
-                                onTap: (){},
+                                onTap: (){
+
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return SimpleDialog(
+                                          title: Container(
+                                            padding: EdgeInsets.only(left: 10.0, right: 25.0),
+
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  height: 45,
+                                                  width: 45,
+                                                  decoration: BoxDecoration(
+                                                      color: Theme.of(context).accentColor,
+                                                      shape: BoxShape.circle,
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Colors.black.withOpacity(0.5),
+                                                          spreadRadius: 3,
+                                                          blurRadius: 5,
+                                                          offset: Offset(0, 3),
+                                                        )
+                                                      ],
+                                                      image: DecorationImage(
+                                                          image: AssetImage('assets/vocab-keeper.png',),
+                                                          fit: BoxFit.scaleDown,
+                                                          scale: 1.0
+                                                      )
+                                                  ),
+                                                ),
+                                                SizedBox(width: 5.0,),
+                                                Text('Keeper', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),)
+                                              ],
+                                            ),
+                                          ),
+                                          children: <Widget>[
+                                            Container(
+                                              alignment: Alignment.topLeft,
+                                              padding: EdgeInsets.symmetric(horizontal: 5.0),
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text('1. Click on any card to read.'),
+                                                  Text('2. Long press/click on any card to delete.'),
+                                                  Text('3. Everything is simple, you will figure these out.'),
+                                                ],
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.0,),
+
+                                            Container(
+                                              alignment: Alignment.center,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  TextButton(onPressed: () async {
+                                                    var gitHubUrl = 'https://github.com/sria-the-fury';
+                                                    await canLaunch(gitHubUrl) ? await launch(gitHubUrl) : throw 'Could not launch $gitHubUrl';
+                                                  },
+                                                      child: Text('SRIA-THE-FURY')
+                                                  ),
+                                                  SizedBox(width: 20.0,),
+                                                  TextButton(onPressed: () async {
+                                                    var followUrl = 'https://oasisoneiric.tech/author';
+                                                    await canLaunch(followUrl) ? await launch(followUrl) : throw 'Could not launch $followUrl';
+                                                  },
+                                                      child: Text('FOLLOW')
+                                                  ),
+
+                                                ],
+                                              ),
+                                            )
+
+
+                                          ],
+                                        );
+                                      }
+                                  );
+
+                                },
                                 child: Container(
                                   padding: EdgeInsets.only(left: 10.0, right: 25.0),
 
                                   child: Row(
                                     children: [
-                                      Text('Keeper', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),)
+                                      Container(
+                                        height: 45,
+                                        width: 45,
+                                        decoration: BoxDecoration(
+                                            color: Theme.of(context).accentColor,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(0.5),
+                                                spreadRadius: 3,
+                                                blurRadius: 5,
+                                                offset: Offset(0, 3),
+                                              )
+                                            ],
+                                            image: DecorationImage(
+                                                image: AssetImage('assets/vocab-keeper.png',),
+                                                fit: BoxFit.scaleDown,
+                                                scale: 1.0
+                                            )
+                                        ),
+                                      ),
+                                      SizedBox(width: 5.0,),
+                                      Text('Keeper', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.white),)
                                     ],
                                   ),
                                 )
