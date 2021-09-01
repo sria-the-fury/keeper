@@ -7,12 +7,16 @@ import 'package:keeper/theme/ThemeModel.dart';
 import 'package:provider/provider.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:desktop_window/desktop_window.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(KeeperModelAdapter());
   await Hive.openBox<KeeperModel>('keeper');
+
+  // await DesktopWindow.setMinWindowSize(Size(950,590));
+  // await DesktopWindow.setMaxWindowSize(Size(950,590));
   runApp(MyApp());
 }
 

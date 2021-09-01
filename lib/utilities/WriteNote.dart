@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:keeper/boxes/Boxes.dart';
+import 'package:keeper/model/KeeperModel.dart';
+import 'package:keeper/utilities/KeeperSnackBar.dart';
+
 
 class WriteNote extends StatefulWidget {
   const WriteNote ({Key? key}) : super(key: key);
@@ -15,19 +21,38 @@ class _WriteNoteState extends State<WriteNote> {
   final FocusNode _focusNode = FocusNode();
   String diaryText = '';
 
+ Future addNote(String noteDelta, String dayMonthYear, DateTime createdAt) async {
+   final keeper = KeeperModel()
+       ..noteDelta = noteDelta
+       ..dayMonthYear = dayMonthYear
+       ..createdAt = createdAt;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    setState(() {
-      diaryText = _quillController.document.toPlainText();
-    });
-  }
+   final box = Boxes.getNote();
+   box.add(keeper);
+
+
+ }
+
+ _addNote() async {
+   try{
+     await addNote(jsonEncode(_quillController.document.toDelta().toJson()),
+         '${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}', DateTime.now());
+
+
+   }catch(e){
+     ScaffoldMessenger.of(context).showSnackBar(KeeperSnackBar.errorSnackBar(e.toString(), context, true));
+
+   } finally{
+     Navigator.of(context).pop();
+     ScaffoldMessenger.of(context).showSnackBar(KeeperSnackBar.successSnackBar('Note Added', context));
+     
+   }
+ }
+
 
   @override
   Widget build(BuildContext context) {
-    print('diaryText => ${diaryText.length > 1}');
+
 
     return Scaffold(
       body: RawKeyboardListener(
@@ -36,6 +61,18 @@ class _WriteNoteState extends State<WriteNote> {
           setState(() {
             diaryText = _quillController.document.toPlainText();
           });
+          if (event.data.isControlPressed && event.character == 'b') {
+            if (_quillController
+                .getSelectionStyle()
+                .attributes
+                .keys
+                .contains('bold')) {
+              _quillController
+                  .formatSelection(Attribute.clone(Attribute.bold, null));
+            } else {
+              _quillController.formatSelection(Attribute.bold);
+            }
+          }
         },
         child: Container(
         padding: EdgeInsets.all(5.0),
@@ -46,7 +83,7 @@ class _WriteNoteState extends State<WriteNote> {
             focusNode: _focusNode,
             autoFocus: true,
             readOnly: false,
-            placeholder: 'Add content',
+            placeholder: 'Write Note',
             expands: false,
             padding: EdgeInsets.zero,
 
@@ -56,7 +93,7 @@ class _WriteNoteState extends State<WriteNote> {
         ,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).accentColor,
-        onPressed: (){
+        onPressed: diaryText.length > 1 ? _addNote : (){
           Navigator.of(context).pop();
         },
         child: Icon( diaryText.length > 1 ? Icons.save : Icons.arrow_back_ios_new, color: Colors.white,),

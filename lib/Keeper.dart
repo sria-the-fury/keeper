@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:keeper/boxes/Boxes.dart';
+import 'package:keeper/model/KeeperModel.dart';
 import 'package:keeper/theme/ThemeModel.dart';
+import 'package:keeper/utilities/NoteCard.dart';
 import 'package:keeper/utilities/WriteNote.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class Keeper extends StatefulWidget {
   const Keeper ({Key? key}) : super(key: key);
@@ -33,6 +37,30 @@ class _KeeperState extends State<Keeper> {
   }
 
 
+
+
+
+  Widget buildContent (List<KeeperModel> keeper){
+    if(keeper.isEmpty){
+      return Center(child: Text('Add Note'),);
+    }
+    else{
+      var getCount = MediaQuery.of(context).size.width / 220;
+
+      return OrientationBuilder(
+          builder: (context, orientation) =>
+              GridView.count(
+                  crossAxisCount: getCount.toInt(),
+              children: new List.generate(keeper.length, (index) => NoteCard(note: keeper[index])),
+              
+              )
+      );
+
+    }
+
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -40,7 +68,13 @@ class _KeeperState extends State<Keeper> {
         return Scaffold(
           body: Container(
             padding: EdgeInsets.all(5.0),
-            child: Text(themeNotifier.isDark ? "Dark Mode" : "Light Mode"),
+            child: ValueListenableBuilder<Box<KeeperModel>>(
+          valueListenable: Boxes.getNote().listenable(),
+            builder: (context, box, _) {
+              final note = box.values.toList().cast<KeeperModel>();
+
+              return buildContent(note);
+            }),
           ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: Theme.of(context).accentColor,
