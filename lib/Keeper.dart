@@ -23,20 +23,8 @@ class _KeeperState extends State<Keeper> {
   @override
   void initState() {
     super.initState();
-    _getTheme();
-  }
-
-  _getTheme() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.containsKey('isDarkMode')) {
-      var isDark = prefs.getBool('isDarkMode');
-      setState(() {
-        isDarkMode = isDark!;
-      });
-    }
 
   }
-
 
   @override
   dispose(){
