@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:keeper/theme/ThemeModel.dart';
+import 'package:keeper/utilities/WriteNote.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,7 +44,12 @@ class _KeeperState extends State<Keeper> {
           ),
           floatingActionButton: FloatingActionButton(
             backgroundColor: Theme.of(context).accentColor,
-            onPressed: (){},
+            onPressed: (){
+
+              Navigator.of(context).push(new MaterialPageRoute<Null>(
+                  builder: (BuildContext context) => new WriteNote(), fullscreenDialog: true));
+
+            },
             child: Icon(Icons.add, color: Colors.white),
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -55,61 +61,61 @@ class _KeeperState extends State<Keeper> {
             child: OrientationBuilder(
               builder: (BuildContext context, Orientation orientation) {
                 return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child:Container(
-                          height: 60,
-                          padding: EdgeInsets.all(5.0),
-                          child : Row(
-                            children: [
+                    scrollDirection: Axis.horizontal,
+                    child:Container(
+                        height: 50,
+                        padding: EdgeInsets.all(5.0),
+                        child : Row(
+                          children: [
 
-                              GestureDetector(
-                                  onTap: (){},
-                                  child: Container(
-                                    padding: EdgeInsets.only(left: 10.0, right: 25.0),
+                            GestureDetector(
+                                onTap: (){},
+                                child: Container(
+                                  padding: EdgeInsets.only(left: 10.0, right: 25.0),
 
-                                    child: Row(
-                                      children: [
-                                        Text('Keeper', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),)
-                                      ],
-                                    ),
+                                  child: Row(
+                                    children: [
+                                      Text('Keeper', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),)
+                                    ],
+                                  ),
+                                )
+                            ),
+                            themeNotifier.isDark ? ElevatedButton.icon(
+                              onPressed: () async {
+                                themeNotifier.isDark
+                                    ? themeNotifier.isDark = false
+                                    : themeNotifier.isDark = true;
+                              },
+                              icon: Icon(Icons.light),
+                              label: Text('LIGHT'),
+                              style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0)
                                   )
-                              ),
-                              themeNotifier.isDark ? ElevatedButton.icon(
-                                onPressed: () async {
-                                  themeNotifier.isDark
-                                      ? themeNotifier.isDark = false
-                                      : themeNotifier.isDark = true;
-                                },
-                                icon: Icon(Icons.light),
-                                label: Text('LIGHT'),
-                                style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20.0)
-                                    )
-                                ) ,
+                              ) ,
 
 
-                              ) :  ElevatedButton.icon(
-                                onPressed: () async {
-                                  themeNotifier.isDark
-                                      ? themeNotifier.isDark = false
-                                      : themeNotifier.isDark = true;
-                                },
-                                icon: Icon(Icons.dark_mode),
-                                label: Text('DARK'),
-                                style: ElevatedButton.styleFrom(
-                                    primary: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20.0)
-                                    )
-                                ) ,
+                            ) :  ElevatedButton.icon(
+                              onPressed: () async {
+                                themeNotifier.isDark
+                                    ? themeNotifier.isDark = false
+                                    : themeNotifier.isDark = true;
+                              },
+                              icon: Icon(Icons.dark_mode),
+                              label: Text('DARK'),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0)
+                                  )
+                              ) ,
 
 
-                              )
-                            ],
-                          )
-                      )
-                  );
+                            )
+                          ],
+                        )
+                    )
+                );
 
               },
 

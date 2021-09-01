@@ -2,10 +2,17 @@
 
 import 'package:flutter/material.dart';
 import 'package:keeper/Keeper.dart';
+import 'package:keeper/model/KeeperModel.dart';
 import 'package:keeper/theme/ThemeModel.dart';
 import 'package:provider/provider.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(KeeperModelAdapter());
+  await Hive.openBox<KeeperModel>('keeper');
   runApp(MyApp());
 }
 
