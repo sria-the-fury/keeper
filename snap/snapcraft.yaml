@@ -1,0 +1,28 @@
+name: keeper-by-oasis-oneiric
+version: 1.0.0
+summary: Keeper By Oasis Oneiric
+description: A simple note-taking app for Linux.
+
+confinement: strict
+base: core18
+grade: stable
+
+slots:
+  dbus-keeper: # adjust accordingly to your app name
+    interface: dbus
+    bus: session
+    name: org.oasis-oneiric.keeper # adjust accordingly to your app name and
+
+apps:
+  keeper:
+    command: keeper-by-oasis-oneiric
+    extensions: [flutter-master] # Where "master" defines which Flutter channel to use for the build
+    plugs:
+      - network
+    slots:
+      - dbus-keeper
+parts:
+  keeper:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart # The main entry-point file of the application

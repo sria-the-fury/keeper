@@ -1,7 +1,5 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:intl/intl.dart';
 import 'package:keeper/model/KeeperModel.dart';
 import 'package:keeper/utilities/KeeperSnackBar.dart';
@@ -67,9 +65,6 @@ class _NoteCardState extends State<NoteCard> {
   @override
   Widget build(BuildContext context) {
 
-
-    QuillController? _quillController = QuillController(document: Document.fromJson(jsonDecode(widget.note.noteDelta)), selection: TextSelection.collapsed(offset: 0));
-
     return GestureDetector(
       onTap: (){
         Navigator.of(context).push(new MaterialPageRoute<Null>(
@@ -106,7 +101,7 @@ class _NoteCardState extends State<NoteCard> {
               Container(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
-                  child: Text(_quillController.document.toPlainText(),overflow: TextOverflow.fade, softWrap: true, maxLines: 11,),
+                  child: Text(widget.note.noteDelta,overflow: TextOverflow.fade, softWrap: true, maxLines: 11,),
                 ),
               ),
 

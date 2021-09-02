@@ -1,0 +1,8 @@
+ [Desktop Entry]
+  Name=Keeper
+  Comment=Simple Note Taking App for Linux
+  Exec=keeper-by-oasis-oneiric
+  Icon=${SNAP}/meta/gui/keeper.png
+  Terminal=false
+  Type=Application
+  Categories=Education, Office;

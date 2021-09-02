@@ -1,7 +1,5 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_quill/flutter_quill.dart' hide Text;
 import 'package:intl/intl.dart';
 import 'package:keeper/model/KeeperModel.dart';
 import 'package:keeper/utilities/KeeperSnackBar.dart';
@@ -15,8 +13,7 @@ class ReadNote extends StatefulWidget {
 }
 
 class _ReadNoteState extends State<ReadNote> {
-  QuillController? _quillController;
-  final FocusNode _focusNode = FocusNode();
+  final textController = TextEditingController();
   bool isEdit = false;
 
   var newDelta;
@@ -26,20 +23,35 @@ class _ReadNoteState extends State<ReadNote> {
   @override
   initState(){
     super.initState();
+
+    textController.addListener(() {
+      setState(() {
+        newDelta = textController.text;
+      });
+    });
+
     setState(() {
       oldDelta = widget.noteData.noteDelta;
       if(isEdit == false){
         newDelta = oldDelta;
-        _quillController =  QuillController(document: Document.fromJson(jsonDecode(oldDelta)), selection: TextSelection.collapsed(offset: 0));
+        textController.text = newDelta;
       }
     });
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    textController.dispose();
+    super.dispose();
   }
 
   _edit(){
     setState(() {
       isEdit = true;
       newDelta = widget.noteData.noteDelta;
-      _quillController =  QuillController(document: Document.fromJson(jsonDecode(newDelta)), selection: TextSelection.collapsed(offset: 0));
+      textController.text = newDelta;
     });
   }
 
@@ -48,14 +60,14 @@ class _ReadNoteState extends State<ReadNote> {
       isEdit = false;
       oldDelta = widget.noteData.noteDelta;
       newDelta = oldDelta;
+      textController.text = oldDelta;
 
-      _quillController =  QuillController(document: Document.fromJson(jsonDecode(oldDelta)), selection: TextSelection.collapsed(offset: 0));
 
     });
   }
 
   _sameDelta(){
-    return  newDelta.length == 17 || (newDelta.toString() == oldDelta.toString());
+    return  newDelta.length == 0 || (newDelta == oldDelta);
   }
 
   void _editNoteBox(KeeperModel keeper, String noteDelta){
@@ -73,7 +85,7 @@ class _ReadNoteState extends State<ReadNote> {
       setState(() {
         isEdit = false;
         oldDelta = newDelta;
-        _quillController =  QuillController(document: Document.fromJson(jsonDecode(newDelta)), selection: TextSelection.collapsed(offset: 0));
+        textController.text = newDelta;
         ScaffoldMessenger.of(context).showSnackBar(KeeperSnackBar.successSnackBar('Note Updated', context));
 
 
@@ -84,6 +96,9 @@ class _ReadNoteState extends State<ReadNote> {
 
   @override
   Widget build(BuildContext context) {
+
+    print('sameDelta() => ${_sameDelta()}');
+    print('newDelta() => $newDelta');
 
 
 
@@ -97,29 +112,29 @@ class _ReadNoteState extends State<ReadNote> {
             children: [
               GestureDetector(
                 onTap: !_sameDelta() ? ()
-                    {
-                      showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: Text('Discard'),
-                          content: Text('Are you sure to discard editing?'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, 'Cancel'),
-                              child: Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context, 'OK');
-                                _closeEdit();
-                              },
-                              child: Text('OK', style: TextStyle(color: Colors.red[500]),),
-                            ),
-                          ],
+                {
+                  showDialog<String>(
+                    context: context,
+                    builder: (BuildContext context) => AlertDialog(
+                      title: Text('Discard'),
+                      content: Text('Are you sure to discard editing?'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                          child: Text('Cancel'),
                         ),
-                      );
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context, 'OK');
+                            _closeEdit();
+                          },
+                          child: Text('OK', style: TextStyle(color: Colors.red[500]),),
+                        ),
+                      ],
+                    ),
+                  );
 
-                    }
+                }
 
                     : (){
                   Navigator.of(context).pop();
@@ -139,45 +154,26 @@ class _ReadNoteState extends State<ReadNote> {
           ),
         ),
       ),
-      body:
-      RawKeyboardListener(
-        focusNode: FocusNode(),
-        onKey: (event){
-          setState(() {
-            text = _quillController!.document.toPlainText();
-            newDelta = jsonEncode((_quillController!.document.toDelta().toJson()));
-          });
-          if (event.data.isControlPressed && event.character == 'b') {
-            if (_quillController!
-                .getSelectionStyle()
-                .attributes
-                .keys
-                .contains('bold')) {
-              _quillController!
-                  .formatSelection(Attribute.clone(Attribute.bold, null));
-            } else {
-              _quillController!.formatSelection(Attribute.bold);
-            }
-          }
-        },
+      body: isEdit ? TextField(
+        controller: textController,
+        keyboardType: TextInputType.multiline,
+        autofocus: true,
+        maxLines: null,
+
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+          hintText: 'Write your note',
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          errorBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+
+        ),
+      ) : Container(
+        padding: EdgeInsets.all(5.0),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
-            child: QuillEditor(
-              controller: _quillController!,
-              scrollController: ScrollController(),
-              scrollable: true,
-              focusNode: _focusNode,
-              autoFocus: isEdit,
-              readOnly: !isEdit,
-              showCursor: isEdit,
-              placeholder: 'Write Note',
-              expands: false,
-              padding: EdgeInsets.zero,
-
-            ),
-          ),
+          child: Text(widget.noteData.noteDelta),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -186,32 +182,7 @@ class _ReadNoteState extends State<ReadNote> {
         _edit,
         child: Icon( isEdit && _sameDelta() ? Icons.close : isEdit && !_sameDelta() ? Icons.save : Icons.edit, color: Colors.white,),
       ),
-      floatingActionButtonLocation: isEdit ? FloatingActionButtonLocation.endDocked : FloatingActionButtonLocation.endFloat,
 
-      bottomNavigationBar: Visibility(
-        visible: isEdit,
-        child: BottomAppBar(
-          clipBehavior: Clip.antiAlias,
-          color: Theme.of(context).accentColor,
-          elevation: 6.0,
-          shape: CircularNotchedRectangle(),
-          child: OrientationBuilder(
-            builder: (BuildContext context, Orientation orientation) {
-              return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child:Container(
-                      alignment: Alignment.center,
-                      height: 50,
-                      padding: EdgeInsets.only(top:5.0, bottom: 5.0, left: 5.0, right: 80.0),
-                      child : QuillToolbar.basic(controller: _quillController!, showHistory: false,)
-                  )
-              );
-
-            },
-
-          ),
-        ),
-      ),
     );
   }
 }
